@@ -1,0 +1,46 @@
+name: Branch Naming Convention Check
+
+on:
+  push:
+    branches-ignore:
+      - 'main'
+      - 'develop'
+  pull_request:
+    branches: [ 'main', 'develop' ]
+
+jobs:
+  check-branch-naming:
+    name: Check Branch Naming Convention
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "Current branch name: $BRANCH_NAME"
+          
+          # Skip check if it's a PR (as the branch name is handled differently)
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BRANCH_NAME="${{ github.head_ref }}"
+            echo "PR from branch: $BRANCH_NAME"
+          fi
+          
+          # Define allowed branch prefixes
+          ALLOWED_PREFIXES=("feature/")
+          
+          # Check if branch name starts with any allowed prefix
+          VALID_PREFIX=false
+          for PREFIX in "${ALLOWED_PREFIXES[@]}"; do
+            if [[ "$BRANCH_NAME" == $PREFIX* ]]; then
+              VALID_PREFIX=true
+              break
+            fi
+          done
+          
+          # Fail if branch doesn't have a valid prefix
+          if [ "$VALID_PREFIX" = false ]; then
+            echo "❌ ERROR: Branch name '$BRANCH_NAME' does not follow the naming convention."
+            echo "Branch names must start with 'feature/'."
+            exit 1
+          else
+            echo "✅ Branch name '$BRANCH_NAME' follows the required naming convention."
+          fi
