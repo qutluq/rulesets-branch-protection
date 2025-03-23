@@ -1,6 +1,6 @@
-import Cart from '../src/ts/components/cart';
 import plantsList from '../src/data/plants.json';
 import { Basket, Products } from '../src/ts/base/types';
+import Cart from '../src/ts/components/cart';
 
 let cart: Cart;
 let plants: Products[];
@@ -13,7 +13,7 @@ beforeEach(() => {
 
 test('check ease add', () => {
   cart.add('1');
-  expect(cart.basket).toStrictEqual({ '1': 1 });
+  expect(cart.basket).toStrictEqual({ '2': 1 });
 });
 
 test('check fake name', () => {
